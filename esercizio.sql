@@ -82,3 +82,18 @@ select * from public.fatture left join public."Clienti" on fatture.id_cliente = 
 --elenco fatture(numero,importo,iva e data) e nome fornitore
 select numero_fattura,importo,iva,data_fattura, denominazione as nome_fornitore from public.fatture left join public.fornitori on fatture.numero_fornitore = fornitori.numero_fornitore;
 
+--numero fatture iva al 20 per ogni anno
+select count(*) as numero_fatture, extract(year from data_fattura) as data_fattura from public.fatture group by extract(year from data_fattura);
+
+--numero fatture, somma importi per ogni anno
+select count(*) as numero_fatture, sum(importo), extract(year from data_fattura) as data_fattura from public.fatture group by extract(year from data_fattura);
+
+--[EXTRA]anni con almeno 2 fatture tipologia "a"
+select extract(year from data_fattura) as anno from public.fatture where tipologia='A' group by extract(year from data_fattura) having count(*)>2;
+
+--[EXTRA] importi fatture by clienti
+select sum(importo) as totale_importo, regione_residenza as regione_cliente from public.fatture left join public."Clienti" on fatture.id_cliente= numero_cliente ;
+group by regione_residenza
+
+--[EXTRA] numero clienti nati 1980 con fattura >50
+select count(*) as numero_clienti from public."Clienti" left join public.fatture on fatture.id_cliente = "Clienti".numero_cliente  where anno_nascita=1980 and importo>50;
